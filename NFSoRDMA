@@ -1,0 +1,27 @@
+1.Installing RDMA packages
+   yum --setopt=group_package_types=optional groupinstall "Infiniband Support"
+2.Starting the RDMA services
+   systemctl start rdma.service
+   systemctl start opensm.service
+   systemctl enable rdma
+3.RDMA configuration file(s)
+   /etc/rdma/rdma.conf
+4.Configure IP addresses on the ConnectX-3 adapter port connected to the switch
+   ifconfig ib0 ipadress
+5.Verify IP connectivity between the servers.
+   ping
+6.Load the RDMA transport module on the server.
+   modprobe svcrdma
+   modprobe rpcrdma
+7.configure nfs server
+   mkdir /root/my_directory
+   /root/my_directory *(rw,async,insecure,no_root_squash)
+   systemctl stop firewalld
+   service nfs start
+8.instruct the server to listen on the RDMA transport port.
+   echo rdma 20049 > /proc/fs/nfsd/portlist
+9.Load the RDMA transport module on the client (host B)
+   modprobe xprtrdma
+   modprobe rpcrdma
+10.Mount the directory
+   mount -o rdma,port=20049 19.19.19.7:/root/my_directory /mnt/my_directory
